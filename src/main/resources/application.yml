@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: admin
+    password: admin
+    url: jdbc:mysql://95.169.23.128:3307/postbox?characterEncoding=utf-8&useSSL=false
+  jpa:
+    show-sql: true
+    properties:
+      enable_lazy_load_no_trans: true
+      hibernate:
+        hbm2ddl:
+         auto=update
+      id:
+        new_generator_mappings: false
+
+  jackson:
+    default-property-inclusion: non_null
+server:
+  servlet:
+    context-path:  /postbox
+
+projectUrl:
+  expire_time:
