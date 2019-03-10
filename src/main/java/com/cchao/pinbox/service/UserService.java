@@ -11,6 +11,8 @@ import com.cchao.pinbox.repository.UserRepository;
 import com.cchao.pinbox.security.JWTUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -19,12 +21,14 @@ import java.util.Map;
  * @author : cchao
  * @version 2019-01-31
  */
+@CacheConfig(cacheNames = "User")
 @Service
 public class UserService {
 
     @Autowired
     UserRepository mUserRepository;
 
+    @Cacheable(key = "'user' + #id", unless = "#result eq null")
     public User findUserById(Long id) {
         return mUserRepository.getOne(id);
     }

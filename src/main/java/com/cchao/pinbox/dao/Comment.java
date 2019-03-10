@@ -28,8 +28,6 @@ public class Comment {
     long postId;
     long postUserId;
     long commentUserId;
-    String postUserName;
-    String commentUserName;
 
     String content;
     String images;

@@ -26,7 +26,6 @@ public class Post {
 
     long userId;
     int likeCount;
-    String userName;
     String content;
     String images;
     String tags;

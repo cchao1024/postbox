@@ -37,7 +37,6 @@ public class PostService {
         BeanUtils.copyProperties(dto, post);
 
         post.setUserId(SecurityHelper.getUserId());
-        post.setUserName(SecurityHelper.getUserName());
 
         mPostRepository.save(post);
         return RespBean.suc();

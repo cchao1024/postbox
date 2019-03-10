@@ -41,9 +41,7 @@ public class CommentService {
         BeanUtils.copyProperties(dto, comment);
 
         comment.setPostUserId(post.getUserId())
-                .setPostUserName(post.getUserName())
-                .setCommentUserId(SecurityHelper.getUserId())
-                .setCommentUserName(SecurityHelper.getUserName());
+                .setCommentUserId(SecurityHelper.getUserId());
 
         mCommentRepository.save(comment);
         return RespBean.suc();

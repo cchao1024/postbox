@@ -29,8 +29,6 @@ public class Reply {
 
     long commentUserId;
     long replyUserId;
-    String commentUserName;
-    String replyUserName;
 
     String content;
     String images;

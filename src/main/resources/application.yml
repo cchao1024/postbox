@@ -16,6 +16,20 @@ spring:
 
   jackson:
     default-property-inclusion: non_null
+
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password:
+    timeout: 1000ms
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+
 server:
   servlet:
     context-path:  /postbox

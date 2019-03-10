@@ -38,9 +38,7 @@ public class ReplyService {
 
         reply.setPostId(comment.getPostId())
                 .setCommentUserId(comment.getCommentUserId())
-                .setCommentUserName(comment.getCommentUserName())
-                .setReplyUserId(SecurityHelper.getUserId())
-                .setReplyUserName(SecurityHelper.getUserName());
+                .setReplyUserId(SecurityHelper.getUserId());
 
         mReplyRepository.save(reply);
         return RespBean.suc();
