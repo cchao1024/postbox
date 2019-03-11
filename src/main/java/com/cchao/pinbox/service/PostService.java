@@ -3,8 +3,12 @@ package com.cchao.pinbox.service;
 import com.cchao.pinbox.bean.req.PageDTO;
 import com.cchao.pinbox.bean.req.post.PostDTO;
 import com.cchao.pinbox.bean.resp.RespBean;
+import com.cchao.pinbox.bean.resp.post.CommentVO;
+import com.cchao.pinbox.bean.resp.post.PostListVO;
+import com.cchao.pinbox.bean.resp.post.PostVO;
 import com.cchao.pinbox.constant.enums.Results;
 import com.cchao.pinbox.dao.Post;
+import com.cchao.pinbox.dao.User;
 import com.cchao.pinbox.exception.CommonException;
 import com.cchao.pinbox.repository.PostRepository;
 import com.cchao.pinbox.security.SecurityHelper;
@@ -26,6 +30,8 @@ public class PostService {
     PostRepository mPostRepository;
     @Autowired
     UserService mUserService;
+    @Autowired
+    CommentService mCommentService;
 
     public Post findById(long id) {
         return mPostRepository.getOne(id);
@@ -42,12 +48,57 @@ public class PostService {
         return RespBean.suc();
     }
 
-    public Page<Post> getPostList(PageDTO dto) {
-        return mPostRepository.findAll(dto.toPageable());
+    /**
+     * 获取评论下的 部分回复
+     *
+     * @param postId postId
+     * @param dto    page
+     */
+    public PostVO findPostVo(long postId, PageDTO dto) {
+        Optional<Post> optional = mPostRepository.findById(postId);
+        if (!optional.isPresent()) {
+            throw CommonException.of(Results.UN_EXIST_POST);
+        }
+        Post post = optional.get();
+        // copy到vo
+        PostVO postVO = new PostVO();
+        BeanUtils.copyProperties(post, postVO);
+
+        // 获取用户信息
+        User postUser = mUserService.findUserById(post.getUserId());
+
+        // 获取 CommentVo，
+        Page<CommentVO> commentVO = mCommentService.findCommentVoByPost(post.getId(), dto);
+
+        postVO.setPostUserId(postUser.getId())
+                .setPostUserAvatar(postUser.getAvatar())
+                .setPostUserName(postUser.getNickName())
+                // list comment
+                .setList(commentVO.getContent())
+                .setCurPage(dto.getPage())
+                .setTotalPage(commentVO.getTotalPages());
+        return postVO;
+    }
+
+    public Page<PostListVO> findPostList(PageDTO dto) {
+        Page<PostListVO> result = mPostRepository.findAll(dto.toPageable()).map(post -> {
+            User user = mUserService.findUserById(post.getUserId());
+
+            // postListVO
+            PostListVO postListVO = new PostListVO();
+            BeanUtils.copyProperties(post, postListVO);
+            postListVO.setPostUserAvatar(user.getAvatar())
+                    .setPostUserName(user.getNickName())
+                    .setPostUserId(user.getId());
+
+            return postListVO;
+        });
+        return result;
     }
 
     /**
      * 添加喜欢，同时增长用户的like数量
+     *
      * @param id id
      */
     public RespBean likePost(Long id) {

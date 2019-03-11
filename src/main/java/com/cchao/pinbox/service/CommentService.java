@@ -3,9 +3,12 @@ package com.cchao.pinbox.service;
 import com.cchao.pinbox.bean.req.PageDTO;
 import com.cchao.pinbox.bean.req.post.CommentDTO;
 import com.cchao.pinbox.bean.resp.RespBean;
+import com.cchao.pinbox.bean.resp.post.CommentVO;
+import com.cchao.pinbox.bean.resp.post.ReplyVO;
 import com.cchao.pinbox.constant.enums.Results;
 import com.cchao.pinbox.dao.Comment;
 import com.cchao.pinbox.dao.Post;
+import com.cchao.pinbox.dao.User;
 import com.cchao.pinbox.exception.CommonException;
 import com.cchao.pinbox.repository.CommentRepository;
 import com.cchao.pinbox.security.SecurityHelper;
@@ -28,12 +31,17 @@ public class CommentService {
     @Autowired
     PostService mPostService;
     @Autowired
+    ReplyService mReplyService;
+    @Autowired
     UserService mUserService;
 
     public Comment findById(long id) {
         return mCommentRepository.getOne(id);
     }
 
+    /**
+     * 新的 评论
+     */
     public RespBean CommentNew(CommentDTO dto) {
         Post post = mPostService.findById(dto.getPostId());
 
@@ -49,18 +57,40 @@ public class CommentService {
 
     /**
      * 获取评论下的 部分回复
-     * @param dto
-     * @return
      */
-    public Page<Comment> getCommentAndReply(PageDTO dto) {
-        return mCommentRepository.findAll(dto.toPageable());
+    public Page<CommentVO> findCommentVoByPost(long posId, PageDTO dto) {
+        // 拿到comment 分页
+        Page<Comment> commentPage = mCommentRepository.findByPostId(posId, dto.toPageable());
+        // 转化成 VO
+        Page<CommentVO> result = commentPage.map(comment -> {
+            // 获取用户信息
+            User postUser = mUserService.findUserById(comment.getPostUserId());
+            User commentUser = mUserService.findUserById(comment.getCommentUserId());
+
+            // 封装 CommentVo
+            CommentVO commentVO = new CommentVO();
+            BeanUtils.copyProperties(comment, commentVO);
+
+            // 获取 replyVo
+            Page<ReplyVO> replyVO = mReplyService.findReplyVoByComment(comment.getId(), dto);
+            commentVO.setPostId(postUser.getId())
+                    .setPostUserAvatar(postUser.getAvatar())
+                    .setPostUserName(postUser.getNickName())
+
+                    // comment
+                    .setCommentUserAvatar(commentUser.getAvatar())
+                    .setCommentUserId(commentUser.getId())
+                    .setCommentUserName(commentUser.getNickName())
+
+                    // list reply
+                    .setList(replyVO.getContent())
+                    .setCurPage(dto.getPage())
+                    .setTotalPage(replyVO.getTotalPages());
+            return commentVO;
+        });
+        return result;
     }
 
-    /**
-     * 同事 获取其底下前10的 回复
-     * @param dto
-     * @return
-     */
     public Page<Comment> getCommentList(PageDTO dto) {
         return mCommentRepository.findAll(dto.toPageable());
     }

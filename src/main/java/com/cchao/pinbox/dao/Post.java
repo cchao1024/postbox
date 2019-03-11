@@ -26,6 +26,7 @@ public class Post {
 
     long userId;
     int likeCount;
+    int reviewCount;
     String content;
     String images;
     String tags;
@@ -34,6 +35,10 @@ public class Post {
 
     public Post increaseLike() {
         likeCount++;
+        return this;
+    }
+    public Post increaseReview() {
+        reviewCount++;
         return this;
     }
 }

@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: admin
     password: admin
-    url: jdbc:mysql://95.169.23.128:3307/postbox?characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://95.169.23.128:3307/postbox?characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
   jpa:
     show-sql: true
     properties:

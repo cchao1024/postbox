@@ -1,6 +1,7 @@
 package com.cchao.pinbox.repository;
 
 import com.cchao.pinbox.dao.Post;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

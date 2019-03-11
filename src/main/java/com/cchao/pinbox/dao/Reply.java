@@ -26,8 +26,9 @@ public class Reply {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     long postId;
-
+    long commentId;
     long commentUserId;
+
     long replyUserId;
 
     String content;

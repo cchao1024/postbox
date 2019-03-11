@@ -3,9 +3,11 @@ package com.cchao.pinbox.service;
 import com.cchao.pinbox.bean.req.PageDTO;
 import com.cchao.pinbox.bean.req.post.ReplyDTO;
 import com.cchao.pinbox.bean.resp.RespBean;
+import com.cchao.pinbox.bean.resp.post.ReplyVO;
 import com.cchao.pinbox.constant.enums.Results;
 import com.cchao.pinbox.dao.Comment;
 import com.cchao.pinbox.dao.Reply;
+import com.cchao.pinbox.dao.User;
 import com.cchao.pinbox.exception.CommonException;
 import com.cchao.pinbox.repository.ReplyRepository;
 import com.cchao.pinbox.security.SecurityHelper;
@@ -30,6 +32,9 @@ public class ReplyService {
     @Autowired
     UserService mUserService;
 
+    /**
+     * 新的回复
+     */
     public RespBean ReplyNew(ReplyDTO dto) {
         Comment comment = mCommentService.findById(dto.getCommentId());
 
@@ -44,12 +49,39 @@ public class ReplyService {
         return RespBean.suc();
     }
 
+    /**
+     * 获取评论下的 部分回复
+     *
+     * @param dto
+     * @return
+     */
+    public Page<ReplyVO> findReplyVoByComment(long commentId, PageDTO dto) {
+        // 拿到comment 分页
+        Page<Reply> commentPage = mReplyRepository.findByCommentId(commentId, dto.toPageable());
+        // 转化成 VO
+        Page<ReplyVO> result = commentPage.map(comment -> {
+            // 获取用户信息
+            User replyUser = mUserService.findUserById(comment.getReplyUserId());
+            User commentUser = mUserService.findUserById(comment.getCommentUserId());
+
+            // 封装 vo
+            ReplyVO replyVO = new ReplyVO();
+            BeanUtils.copyProperties(comment, replyVO);
+            replyVO.setReplyUserId(replyUser.getId())
+                    .setCommentUserId(commentUser.getId())
+                    .setCommentUserName(commentUser.getNickName());
+            return replyVO;
+        });
+        return result;
+    }
+
     public Page<Reply> getReplyList(PageDTO dto) {
         return mReplyRepository.findAll(dto.toPageable());
     }
 
     /**
      * 添加喜欢，同时增长用户的like数量
+     *
      * @param id id
      */
     public RespBean likeReply(Long id) {

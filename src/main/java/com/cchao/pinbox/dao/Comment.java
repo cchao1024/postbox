@@ -33,11 +33,17 @@ public class Comment {
     String images;
 
     int likeCount;
+    int reviewCount;
     Date createTime;
     Date updateTime;
 
     public Comment increaseLike() {
         likeCount++;
+        return this;
+    }
+
+    public Comment increaseReview() {
+        reviewCount++;
         return this;
     }
 }
