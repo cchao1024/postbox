@@ -9,6 +9,7 @@ import com.cchao.pinbox.exception.CommonException;
 import com.cchao.pinbox.exception.SystemErrorMessage;
 import com.cchao.pinbox.repository.UserRepository;
 import com.cchao.pinbox.security.JWTUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -23,13 +24,15 @@ import java.util.Map;
  */
 @CacheConfig(cacheNames = "User")
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
     UserRepository mUserRepository;
 
-    @Cacheable(key = "'user' + #id", unless = "#result eq null")
+    @Cacheable(key = "'user_id_' + #id", unless = "#result eq null")
     public User findUserById(Long id) {
+        log.info("UserService#findUserById:" + id);
         return mUserRepository.getOne(id);
     }
 
@@ -39,7 +42,9 @@ public class UserService {
         mUserRepository.save(user.increaseLike());
     }
 
+    @Cacheable(key = "'user_email_' + #id", unless = "#result eq null")
     public User findUserByEmail(String email) {
+        log.info("UserService#findUserByEmail:" + email);
         return mUserRepository.findByEmail(email)
                 .orElse(null);
     }
@@ -49,8 +54,10 @@ public class UserService {
         String password = params.getPassword();
 
         User user = findUserByEmail(email);
+        // 检验密码是否正确
         boolean validPassword = StringUtils.equals(user.getPassword(), password);
         if (validPassword) {
+            // 登录成功 返回 token
             String token = JWTUtil.sign(email, user.getId(), password);
 
             return new LoginResp()

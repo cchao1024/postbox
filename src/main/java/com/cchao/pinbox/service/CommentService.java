@@ -44,6 +44,8 @@ public class CommentService {
      */
     public RespBean CommentNew(CommentDTO dto) {
         Post post = mPostService.findById(dto.getPostId());
+        // post 评论+1
+        mPostService.reviewPost(dto.getPostId());
 
         Comment comment = new Comment();
         BeanUtils.copyProperties(dto, comment);
@@ -107,6 +109,18 @@ public class CommentService {
             mCommentRepository.save(comment.increaseLike());
 
             mUserService.increaseLike(comment.getCommentUserId());
+            return RespBean.suc();
+        } else {
+            throw CommonException.of(Results.UN_EXIST_COMMENT);
+        }
+    }
+
+    public RespBean increaseReview(Long id) {
+        Optional<Comment> optional = mCommentRepository.findById(id);
+        if (optional.isPresent()) {
+            Comment comment = optional.get();
+            mCommentRepository.save(comment.increaseReview());
+
             return RespBean.suc();
         } else {
             throw CommonException.of(Results.UN_EXIST_COMMENT);

@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class JWTUtil {
     // 过期时间
-    private static final long EXPIRE_TIME = 24 * 3600 * 1000;
+    private static final long EXPIRE_TIME = 100 * 24 * 3600 * 1000;
 
     private static final String HEADER_NAME = "Authorization";
     private static final String BEARER = "Bearer";
@@ -28,22 +28,14 @@ public class JWTUtil {
      * @param secret 用户的密码
      * @return 是否正确
      */
-    public static boolean verify(boolean isThrow, String token, String username, long userId, String secret) {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withClaim(Constant.USER_NAME, username)
-                    .withClaim(Constant.USER_ID, userId)
-                    .build();
-            verifier.verify(token);
-            return true;
-        } catch (Exception exception) {
-            if (isThrow) {
-                throw exception;
-            } else {
-                return false;
-            }
-        }
+    public static boolean verify(String token, String username, long userId, String secret) {
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withClaim(Constant.USER_NAME, username)
+                .withClaim(Constant.USER_ID, userId)
+                .build();
+        verifier.verify(token);
+        return true;
     }
 
     /**
@@ -86,7 +78,7 @@ public class JWTUtil {
     }
 
     /**
-     * 生成签名,5min后过期
+     * 生成签名
      *
      * @param username 用户名
      * @param secret   用户的密码

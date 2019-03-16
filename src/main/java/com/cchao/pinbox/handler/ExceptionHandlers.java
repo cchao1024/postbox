@@ -61,6 +61,12 @@ public class ExceptionHandlers {
         return RespBean.fail(Results.TOKEN_EXPIRED);
     }
 
+    @ResponseBody
+    @ExceptionHandler(value = Exception.class)
+    public RespBean handle401(Exception e) {
+        return RespBean.fail(Results.ERROR);
+    }
+
 
     /**
      * 参数校验

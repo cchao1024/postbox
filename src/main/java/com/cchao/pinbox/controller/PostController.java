@@ -39,6 +39,16 @@ public class PostController {
         return mPostService.likePost(id);
     }
 
+    /**
+     * 获取默认第一页
+     */
+    @RequestMapping("/index")
+    public RespListBean<PostVO> getIndex(@RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+
+        Page<PostVO> pageObj = mPostService.getIndex(PageDTO.of(0, pageSize));
+        return RespListBean.of(pageObj, 0);
+    }
+
     @RequestMapping("/list")
     public RespListBean<PostListVO> getPostByPage(@RequestParam(value = "page", defaultValue = "1") int page
             , @RequestParam(value = "pageSize", defaultValue = "30") int pageSize) {

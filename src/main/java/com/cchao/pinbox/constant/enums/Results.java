@@ -10,12 +10,15 @@ import lombok.Getter;
 @Getter
 public enum Results implements ErrorMessage {
 
-    // 0+ 通用异常
     SUC(0, "请求成功"),
+
+    ERROR(-1, "系统异常"),
+    // 0+ 通用异常
     FAIL(1, "请求失败"),
     PARAM_ERROR(2, "参数不正确"),
     PARAM_EMPTY(3, "参数为空"),
     PRODUCT_NOT_EXIST(4, "请求ID不存在"),
+    FILE_EMPTY(5, "file is empty"),
 
     // 1000+ 用户
     UN_EXIST_USER(1001, "用户不存在"),

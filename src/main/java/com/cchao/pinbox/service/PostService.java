@@ -80,6 +80,13 @@ public class PostService {
         return postVO;
     }
 
+    public Page<PostVO> getIndex(PageDTO dto) {
+        Page<PostVO> result = mPostRepository.findAll(dto.toPageable()).map(post -> {
+            return findPostVo(post.getId(), PageDTO.of(0, 10));
+        });
+        return result;
+    }
+
     public Page<PostListVO> findPostList(PageDTO dto) {
         Page<PostListVO> result = mPostRepository.findAll(dto.toPageable()).map(post -> {
             User user = mUserService.findUserById(post.getUserId());
@@ -109,6 +116,22 @@ public class PostService {
 
             // 用户 like +1
             mUserService.increaseLike(post.getUserId());
+            return RespBean.suc();
+        } else {
+            throw CommonException.of(Results.UN_EXIST_POST);
+        }
+    }
+
+    /**
+     * 添加评论
+     *
+     * @param id id
+     */
+    public RespBean reviewPost(Long id) {
+        Optional<Post> optional = mPostRepository.findById(id);
+        if (optional.isPresent()) {
+            Post post = optional.get();
+            mPostRepository.save(post.increaseReview());
             return RespBean.suc();
         } else {
             throw CommonException.of(Results.UN_EXIST_POST);
