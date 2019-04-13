@@ -13,7 +13,6 @@ import java.io.File;
 @EnableCaching
 public class PostboxApplication {
 
-
     public static void main(String[] args) {
         SpringApplication.run(PostboxApplication.class, args);
         new File("/www/file/upload/" + DateFormatUtils.format(System.currentTimeMillis(), "yyyy_MM_dd")).mkdirs();

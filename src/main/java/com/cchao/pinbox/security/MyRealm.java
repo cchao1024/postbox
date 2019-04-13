@@ -37,7 +37,7 @@ public class MyRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 //        String username = JWTUtil.getUserId(principals.toString());
-        User user = userService.findUserById(555l);
+//        User user = userService.findUserById(555l);
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 //        simpleAuthorizationInfo.addRole(user.getRole());
 //        Set<String> permission = new HashSet<>(Arrays.asList(user.getPermission().split(",")));

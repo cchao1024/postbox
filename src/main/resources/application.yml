@@ -6,6 +6,7 @@ spring:
     url: jdbc:mysql://95.169.23.128:3307/postbox?characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
   jpa:
     show-sql: true
+    open-in-view: true
     properties:
       enable_lazy_load_no_trans: true
       hibernate:

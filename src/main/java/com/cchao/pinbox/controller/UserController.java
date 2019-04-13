@@ -55,8 +55,8 @@ public class UserController {
     @RequiresAuthentication
     public RespBean update(@RequestParam Map<String, String> map, HttpServletRequest httpRequest) {
 
-        String name = JWTUtil.getUsername(httpRequest);
-        User user = mUserService.saveUserInfo(name, map);
+        long id = JWTUtil.getUserId(httpRequest);
+        User user = mUserService.saveUserInfo(id, map);
         return RespBean.suc(user);
     }
 

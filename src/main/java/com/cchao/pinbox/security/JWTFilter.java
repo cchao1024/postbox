@@ -1,5 +1,7 @@
 package com.cchao.pinbox.security;
 
+import com.cchao.pinbox.constant.Constant;
+import com.cchao.pinbox.util.Printer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author : cchao
@@ -22,10 +26,25 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      * 判断用户是否想要登入。
      * 检测header里面是否包含Authorization字段即可
      */
+    private List<String> filterWhiteList = new ArrayList<>();
+
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
+
+        // 白名单不拦截，
+        if (filterWhiteList.isEmpty()) {
+            filterWhiteList.add("app/getLaunch");
+        }
+
+        if (request instanceof HttpServletRequest) {
+            for (String item : filterWhiteList) {
+                if (((HttpServletRequest)request).getRequestURI().contains(item)) {
+                    return false;
+                }
+            }
+        }
         HttpServletRequest req = (HttpServletRequest) request;
-        String authorization = req.getHeader("Authorization");
+        String authorization = req.getHeader(Constant.AUTHORIZATION_HEADER_NAME);
         return authorization != null;
     }
 
@@ -55,6 +74,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        Printer.println("isAccessAllowed");
         if (isLoginAttempt(request, response)) {
             try {
                 executeLogin(request, response);

@@ -6,9 +6,13 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.cchao.pinbox.constant.Constant;
+import com.cchao.pinbox.util.Printer;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+
+import static com.cchao.pinbox.constant.Constant.AUTHORIZATION_HEADER_NAME;
 
 /**
  * @author : cchao
@@ -18,7 +22,6 @@ public class JWTUtil {
     // 过期时间
     private static final long EXPIRE_TIME = 100 * 24 * 3600 * 1000;
 
-    private static final String HEADER_NAME = "Authorization";
     private static final String BEARER = "Bearer";
 
     /**
@@ -29,6 +32,8 @@ public class JWTUtil {
      * @return 是否正确
      */
     public static boolean verify(String token, String username, long userId, String secret) {
+        Printer.println("verify");
+
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTVerifier verifier = JWT.require(algorithm)
                 .withClaim(Constant.USER_NAME, username)
@@ -52,22 +57,22 @@ public class JWTUtil {
         }
     }
 
-    /**
-     * 获得token中的信息无需secret解密也能获得
-     *
-     * @return token中包含的用户名
-     */
-    public static String getUsername(HttpServletRequest httpServletRequest) {
-//        String token = StringUtils.removeFirst(httpServletRequest.getHeader(HEADER_NAME), BEARER);
-        String token = httpServletRequest.getHeader(HEADER_NAME);
-        return getUsername(token);
+    public static String getToken(HttpServletRequest httpServletRequest) {
+        return httpServletRequest.getHeader(AUTHORIZATION_HEADER_NAME);
     }
 
-    /**
-     * 获得token中的信息无需secret解密也能获得
-     *
-     * @return token中包含的用户名
-     */
+    public static boolean haveToken(HttpServletRequest httpServletRequest) {
+        return StringUtils.isNoneEmpty(getToken(httpServletRequest));
+    }
+
+    public static long getUserId(HttpServletRequest httpServletRequest) {
+        return getUserId(getToken(httpServletRequest));
+    }
+        /**
+         * 获得token中的信息无需secret解密也能获得
+         *
+         * @return token中包含的用户名
+         */
     public static long getUserId(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);

@@ -70,6 +70,23 @@ public class UserService {
         }
     }
 
+    public LoginResp visitorSignup() {
+        String timeStamp = String.valueOf(System.currentTimeMillis());
+        String nameLabel = timeStamp.substring(timeStamp.length() - 5);
+        String defPwd = "123456";
+        String defEmail = "123@126.com";
+        User user = new User().setEmail("")
+                .setNickName("游客" + nameLabel)
+                .setPassword(defPwd);
+
+        Long id = mUserRepository.save(user).getId();
+        return new LoginResp()
+                .setAge(user.getAge())
+                .setNikeName(user.getNickName())
+                .setEmail(defEmail)
+                .setToken(JWTUtil.sign(defEmail, id, defPwd));
+    }
+
     public LoginResp signup(UserSignUpDTO params) {
         String email = params.getEmail();
         String password = params.getPassword();
@@ -95,8 +112,8 @@ public class UserService {
     /**
      * 更新用户信息
      */
-    public User saveUserInfo(String email, Map<String, String> map) {
-        User user = findUserByEmail(email);
+    public User saveUserInfo(long id, Map<String, String> map) {
+        User user = findUserById(id);
 
         try {
             for (Map.Entry<String, String> entry : map.entrySet()) {

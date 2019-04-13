@@ -5,6 +5,7 @@ import com.cchao.pinbox.bean.resp.RespBean;
 import com.cchao.pinbox.constant.enums.Results;
 import com.cchao.pinbox.exception.CommonException;
 import com.cchao.pinbox.exception.UnauthorizedException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.ShiroException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
  * @version 2019-01-30
  */
 @RestControllerAdvice
+@Slf4j
 public class ExceptionHandlers {
 
     /**
@@ -32,6 +34,7 @@ public class ExceptionHandlers {
     @ResponseBody
     @ExceptionHandler(value = CommonException.class)
     public RespBean handlerAuthorizeException(CommonException ex) {
+        log.error("ExceptionHandlers", ex);
         return RespBean.of(ex.getCode(), ex.getMessage());
     }
 
@@ -42,6 +45,7 @@ public class ExceptionHandlers {
     @ExceptionHandler(value = ShiroException.class)
     @ResponseBody
     public RespBean handle401(ShiroException e) {
+        log.error("ExceptionHandlers", e);
         return RespBean.of(401, e.getMessage());
     }
 
@@ -51,6 +55,7 @@ public class ExceptionHandlers {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = UnauthorizedException.class)
     public RespBean handle401(UnauthorizedException e) {
+        log.error("ExceptionHandlers", e);
         return RespBean.of(401, e.getMessage());
     }
 
@@ -58,12 +63,14 @@ public class ExceptionHandlers {
     @ResponseBody
     @ExceptionHandler(value = TokenExpiredException.class)
     public RespBean handle401(TokenExpiredException e) {
+        log.error("ExceptionHandlers", e);
         return RespBean.fail(Results.TOKEN_EXPIRED);
     }
 
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
-    public RespBean handle401(Exception e) {
+    public RespBean handleOtherException(Exception e) {
+        log.error("ExceptionHandlers", e);
         return RespBean.fail(Results.ERROR);
     }
 
@@ -81,6 +88,7 @@ public class ExceptionHandlers {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(","));
 
+        log.error("ExceptionHandlers", ex);
         return RespBean.of(203, errorMsg);
     }
 
@@ -97,6 +105,7 @@ public class ExceptionHandlers {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(","));
 
+        log.error("ExceptionHandlers", ex);
         return RespBean.fail(Results.PARAM_ERROR).setMsg(errorMsg);
     }
 }

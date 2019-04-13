@@ -1,6 +1,7 @@
 package com.cchao.pinbox.bean.req.user;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
@@ -13,6 +14,7 @@ import javax.validation.constraints.Email;
  * @since 1.0
  */
 @Data
+@Accessors(chain = true)
 public class UserLoginDTO {
 
     @Email(message = "不是有效的电子邮箱")
