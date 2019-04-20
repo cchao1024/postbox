@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class LoginResp {
+    boolean isVisitor;
     String token;
     String email;
     String nikeName;

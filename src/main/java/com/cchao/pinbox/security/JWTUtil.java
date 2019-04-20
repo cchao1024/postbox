@@ -6,11 +6,14 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.cchao.pinbox.constant.Constant;
-import com.cchao.pinbox.util.Printer;
+import com.cchao.pinbox.service.UserService;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 
 import static com.cchao.pinbox.constant.Constant.AUTHORIZATION_HEADER_NAME;
 
@@ -24,6 +27,9 @@ public class JWTUtil {
 
     private static final String BEARER = "Bearer";
 
+    @Autowired
+    UserService userService;
+
     /**
      * 校验token是否正确
      *
@@ -32,7 +38,6 @@ public class JWTUtil {
      * @return 是否正确
      */
     public static boolean verify(String token, String username, long userId, String secret) {
-        Printer.println("verify");
 
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTVerifier verifier = JWT.require(algorithm)

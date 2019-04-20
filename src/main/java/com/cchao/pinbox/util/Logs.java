@@ -1,17 +1,20 @@
 package com.cchao.pinbox.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author : cchao
  * @version 2019-02-13
  */
-public class Printer {
-
-    public static void print(Object... args) {
-        System.out.print(getFormat(args));
-    }
+@Slf4j
+public class Logs {
 
     public static void println(Object... args) {
-        System.out.println(getFormat(args));
+        log.info(getFormat(args));
+    }
+
+    public static void logException(Object... args) {
+        log.error(getFormat(args));
     }
 
     public static String getFormat(Object... args) {

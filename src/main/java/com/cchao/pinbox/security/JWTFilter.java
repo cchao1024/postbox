@@ -1,19 +1,24 @@
 package com.cchao.pinbox.security;
 
 import com.cchao.pinbox.constant.Constant;
-import com.cchao.pinbox.util.Printer;
-import lombok.extern.slf4j.Slf4j;
+import com.cchao.pinbox.exception.UnauthorizedException;
+import com.cchao.pinbox.util.Logs;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author : cchao
@@ -37,15 +42,19 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         }
 
         if (request instanceof HttpServletRequest) {
+            HttpServletRequest req = (HttpServletRequest) request;
+            // 如果携带有用户信息
+            String authorization = req.getHeader(Constant.AUTHORIZATION_HEADER_NAME);
+            if (StringUtils.isNoneEmpty(authorization)) {
+                return true;
+            }
             for (String item : filterWhiteList) {
-                if (((HttpServletRequest)request).getRequestURI().contains(item)) {
+                if (((HttpServletRequest) request).getRequestURI().contains(item)) {
                     return false;
                 }
             }
         }
-        HttpServletRequest req = (HttpServletRequest) request;
-        String authorization = req.getHeader(Constant.AUTHORIZATION_HEADER_NAME);
-        return authorization != null;
+        return true;
     }
 
     /**
@@ -54,8 +63,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String authorization = httpServletRequest.getHeader("Authorization");
-
+        String authorization = httpServletRequest.getHeader(Constant.AUTHORIZATION_HEADER_NAME);
+        Logs.println("executeLogin", authorization);
         JWTToken token = new JWTToken(authorization);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         getSubject(request, response).login(token);
@@ -74,12 +83,14 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        Printer.println("isAccessAllowed");
+        Logs.println("isAccessAllowed");
         if (isLoginAttempt(request, response)) {
             try {
                 executeLogin(request, response);
             } catch (Exception e) {
-                response401(request, response);
+                Logs.logException("response401", ((HttpServletRequest) request).getRequestURI(), e.getMessage());
+                e.printStackTrace();
+                throw new UnauthorizedException("token error");
             }
         }
         return true;

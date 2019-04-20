@@ -1,5 +1,6 @@
 package com.cchao.pinbox.bean.resp.app;
 
+import com.cchao.pinbox.bean.resp.user.LoginResp;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,6 +14,6 @@ import lombok.experimental.Accessors;
 public class AppLaunch {
     int lastAndroidVersion;
     String versionUpdateMsg;
-    String token;
+    LoginResp userInfo;
 
 }

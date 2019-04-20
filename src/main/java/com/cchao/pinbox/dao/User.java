@@ -1,15 +1,17 @@
 package com.cchao.pinbox.dao;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicUpdate;
+
+import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.io.Serializable;
-import java.util.Date;
+
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Entity
 @Data
@@ -28,6 +30,7 @@ public class User implements Serializable {
 
     private String password;
     private int gender;
+    private int visitor;
     private int age;
     private int getLike;
     private Date updateTime;

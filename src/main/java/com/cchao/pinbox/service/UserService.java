@@ -9,7 +9,7 @@ import com.cchao.pinbox.exception.CommonException;
 import com.cchao.pinbox.exception.SystemErrorMessage;
 import com.cchao.pinbox.repository.UserRepository;
 import com.cchao.pinbox.security.JWTUtil;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -17,6 +17,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author : cchao
@@ -46,7 +48,7 @@ public class UserService {
     public User findUserByEmail(String email) {
         log.info("UserService#findUserByEmail:" + email);
         return mUserRepository.findByEmail(email)
-                .orElse(null);
+            .orElse(null);
     }
 
     public LoginResp login(UserLoginDTO params) {
@@ -61,30 +63,45 @@ public class UserService {
             String token = JWTUtil.sign(email, user.getId(), password);
 
             return new LoginResp()
-                    .setAge(user.getAge())
-                    .setNikeName(user.getNickName())
-                    .setEmail(email)
-                    .setToken(token);
+                .setAge(user.getAge())
+                .setNikeName(user.getNickName())
+                .setEmail(email)
+                .setToken(token);
         } else {
             throw new CommonException(SystemErrorMessage.USER_PASSWORD_INVALID);
         }
+    }
+
+    public LoginResp updateToken(String token) {
+        long userId = JWTUtil.getUserId(token);
+
+        User user = findUserById(userId);
+        // 登录成功 返回 token
+        String newToken = JWTUtil.sign(user.getEmail(), user.getId(), user.getPassword());
+        return new LoginResp()
+            .setAge(user.getAge())
+            .setNikeName(user.getNickName())
+            .setEmail(user.getEmail())
+            .setToken(newToken);
     }
 
     public LoginResp visitorSignup() {
         String timeStamp = String.valueOf(System.currentTimeMillis());
         String nameLabel = timeStamp.substring(timeStamp.length() - 5);
         String defPwd = "123456";
-        String defEmail = "123@126.com";
-        User user = new User().setEmail("")
-                .setNickName("游客" + nameLabel)
-                .setPassword(defPwd);
+        String defEmail = nameLabel + "@qq.com";
+        User user = new User().setVisitor(1)
+            .setEmail(defEmail)
+            .setNickName("游客" + nameLabel)
+            .setPassword(defPwd);
 
         Long id = mUserRepository.save(user).getId();
         return new LoginResp()
-                .setAge(user.getAge())
-                .setNikeName(user.getNickName())
-                .setEmail(defEmail)
-                .setToken(JWTUtil.sign(defEmail, id, defPwd));
+            .setVisitor(true)
+            .setAge(user.getAge())
+            .setNikeName(user.getNickName())
+            .setEmail(defEmail)
+            .setToken(JWTUtil.sign(defEmail, id, defPwd));
     }
 
     public LoginResp signup(UserSignUpDTO params) {
@@ -98,15 +115,15 @@ public class UserService {
         }
 
         user = new User().setEmail(email)
-                .setNickName(nikeName)
-                .setPassword(password);
+            .setNickName(nikeName)
+            .setPassword(password);
 
         Long id = mUserRepository.save(user).getId();
         return new LoginResp()
-                .setAge(user.getAge())
-                .setNikeName(user.getNickName())
-                .setEmail(email)
-                .setToken(JWTUtil.sign(email, id, password));
+            .setAge(user.getAge())
+            .setNikeName(user.getNickName())
+            .setEmail(email)
+            .setToken(JWTUtil.sign(email, id, password));
     }
 
     /**
