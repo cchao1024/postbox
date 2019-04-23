@@ -43,9 +43,9 @@ public class CommentService {
      * 新的 评论
      */
     public RespBean CommentNew(CommentDTO dto) {
-        Post post = mPostService.findById(dto.getPostId());
+        Post post = mPostService.findById(dto.getToId());
         // post 评论+1
-        mPostService.reviewPost(dto.getPostId());
+        mPostService.reviewPost(dto.getToId());
 
         Comment comment = new Comment();
         BeanUtils.copyProperties(dto, comment);

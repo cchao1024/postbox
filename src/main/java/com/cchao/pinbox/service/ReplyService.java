@@ -36,9 +36,9 @@ public class ReplyService {
      * 新的回复
      */
     public RespBean ReplyNew(ReplyDTO dto) {
-        Comment comment = mCommentService.findById(dto.getCommentId());
+        Comment comment = mCommentService.findById(dto.getToId());
         // comment 评论+1
-        mCommentService.increaseReview(dto.getCommentId());
+        mCommentService.increaseReview(dto.getToId());
 
         Reply reply = new Reply();
         BeanUtils.copyProperties(dto, reply);

@@ -51,7 +51,7 @@ public class PostService {
     /**
      * 获取评论下的 部分回复
      *
-     * @param postId postId
+     * @param postId toId
      * @param dto    page
      */
     public PostVO findPostVo(long postId, PageDTO dto) {

@@ -1,8 +1,9 @@
 package com.cchao.pinbox.bean.req.post;
 
+import org.hibernate.validator.constraints.Length;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.hibernate.validator.constraints.Length;
 
 /**
  * @author : cchao
@@ -12,7 +13,7 @@ import org.hibernate.validator.constraints.Length;
 @Accessors(chain = true)
 public class ReplyDTO {
 
-    long commentId;
+    long toId;
     @Length(min = 5, max = 1024, message = "大于于5，小于1024")
     String content;
 
