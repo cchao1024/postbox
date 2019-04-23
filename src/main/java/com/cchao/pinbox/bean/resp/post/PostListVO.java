@@ -1,9 +1,9 @@
 package com.cchao.pinbox.bean.resp.post;
 
+import java.util.Date;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.util.Date;
 
 /**
  * @author : cchao
@@ -22,7 +22,4 @@ public class PostListVO {
     String postUserAvatar;
     String images;
     Date updateTime;
-
-    int curPage;
-    int totalPage;
 }

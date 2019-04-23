@@ -1,6 +1,7 @@
 package com.cchao.pinbox;
 
-import com.cchao.pinbox.util.Printer;
+import com.cchao.pinbox.util.Logs;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +24,7 @@ public class PostboxApplicationTests {
 
     @Test
     public void testRedis() {
-        Printer.print(redisTemplate.opsForValue().get("test.group1.test_name2"));
+        Logs.println(redisTemplate.opsForValue().get("test.group1.test_name2"));
         redisTemplate.opsForValue().append("test:group1:test_name1", "value_1");
         redisTemplate.opsForValue().set("test.group1.test_name2", "value_2");
         Assert.assertEquals(redisTemplate.opsForValue().get("test.group1.test_name2"), "value_2");
