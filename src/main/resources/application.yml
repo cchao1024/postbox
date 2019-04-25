@@ -35,9 +35,5 @@ spring:
         max-idle: 8
         min-idle: 0
 
-server:
-  servlet:
-    context-path:  /postbox
-
 project:
   uploadDirPath: /www/file/upload

@@ -24,7 +24,7 @@ public class ReplyServiceTest {
     @Test
     public void replyNew() {
         ReplyDTO replyDTO = new ReplyDTO();
-        replyDTO.setTo(2)
+        replyDTO.setToId(2)
                 .setContent("回复 2 的回复")
                 .setImages("image");
 
